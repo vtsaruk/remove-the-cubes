@@ -1,16 +1,17 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import './style.css';
 
 function InfoDisplay({title}) {
   return (
-    <div className="info-displlay">
+    <div className="info-displlay label">
       {title}
     </div>
   )
 }
 
 InfoDisplay.propTypes = {
-  title: PropTypes.string.isRequired,
+  title: PropTypes.number.isRequired,
 }
 
 export default InfoDisplay

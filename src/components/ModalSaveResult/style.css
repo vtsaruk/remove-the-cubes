@@ -1,0 +1,12 @@
+.save-result-modal .button-wrapper {
+  justify-content: flex-end;
+  display: flex;
+}
+
+.save-result-modal .modal-body button[type='submit'] {
+  margin-left: 24px;
+}
+
+.save-result-modal .user-name-input {
+  margin-bottom: 32px;
+}

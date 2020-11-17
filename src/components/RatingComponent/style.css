@@ -1,0 +1,15 @@
+.col-lg-2.col-md-2.user-result-list {
+  text-align: center;
+  border: 1px solid #333;
+}
+
+.user-info {
+  padding: 4px 0;
+  border-top: 1px solid #333;
+}
+
+.user-info p {
+  display: flex;
+  justify-content: space-between;
+  margin: 4px 0;
+}

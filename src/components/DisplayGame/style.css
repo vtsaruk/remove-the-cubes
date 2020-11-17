@@ -1,0 +1,16 @@
+.display-game {
+  border: 1px solid #999;
+  font-size: 0;
+}
+
+.cell {
+  width: 10%;
+  height: 0;
+  display: inline-block;
+  padding-bottom: 10%;
+}
+
+.cell.active {
+  background-color: aqua;
+  cursor: pointer;
+}

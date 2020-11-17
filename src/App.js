@@ -1,62 +1,85 @@
-import React, {useReducer} from 'react'
-import {InfoDisplay, Timer, DisplayGame} from './components';
-//import Button from 'react-bootstrap/Button';
-import {START_GAME, END_GAME, CHANGE_TIME, DURATION_GAME} from './constants';
-import {reducerTimer} from './reducer';
+import React, {useReducer, Fragment} from 'react'
+import { InfoDisplay, Timer, DisplayGame, RatingComponent, ModalSaveResult } from './components';
+import Container from 'react-bootstrap/Container';
+import Row from 'react-bootstrap/Row';
+import Col from 'react-bootstrap/Col';
+import Button from 'react-bootstrap/Button';
+import HistoryUsers from './HOC/HistoryUsers';
+
+import { actions, initialState } from './constants';
+import { reducerTimer } from './reducer';
 import './App.css';
 
-const initialState = {
-  isStart: false,
-  time: DURATION_GAME,
-  history: [],
-}
-
-function App() {
+function App({historyUsers}) {
   const [state, dispatch] = useReducer(
     reducerTimer,
     {
-      ...initialState}
+      ...initialState,
+      users: historyUsers,
+    }
   );
+  const {time, isStart, activeBlocks, cash, currentTotalPoints, isShowModal, users} = state;
 
-  const startGame = () => {
-    dispatch({type: START_GAME});
-  }
-
+  const startGame = () =>  dispatch({ type: actions.START_GAME });
   const createNewGame = () => {
     endGame();
-    setTimeout(startGame, 0)
+    setTimeout(startGame, 0);
   }
-  const changeTime = () => {
-    dispatch({type: CHANGE_TIME })
-  };
+  const changeTime = () => dispatch({ type: actions.CHANGE_TIME })
+  const endGame = () => dispatch({ type: actions.END_GAME });
+  const saveUserResult = (data) => dispatch({ type: actions.SAVE_RESULT, ...data });
+  const resetUserResult = () => dispatch({ type: actions.RESET_RESULT });
+  const createScore = (targetPosition) => dispatch({ type: actions.CREATE_SCORE, targetPosition });
 
-  const endGame = () => {
-    dispatch({type: END_GAME});
-  }
-
-  const {time, isStart} = state;
   return (
-    <div className="App">
-      <header className="App-header">
-        <button
-          variant="primary"
-          onClick={startGame}
-        >Start</button>
-        <button
-          variant="primary"
-          onClick={createNewGame}
-        >New Game</button>
-        <InfoDisplay title={'0'} />
-        <Timer
-          endGame={endGame}
-          isGame={isStart}
-          time={time}
-          changeTime={changeTime}
-        />
-      </header>
-      <DisplayGame />
-    </div>
+    <Fragment>
+      <Container>
+        <h1>Good game</h1>
+        <Row>
+          <Col lg={10} md={10}>
+          <header className="header">
+            <div>
+              <Button
+                className="start-game-button"
+                variant="primary"
+                onClick={startGame}
+                disabled={isStart}
+              >
+                Start
+              </Button>
+              <Button
+                variant="primary"
+                onClick={createNewGame}
+                disabled={!isStart}
+              >
+                New Game
+              </Button>
+            </div>
+            <InfoDisplay title={currentTotalPoints} />
+            <Timer
+              endGame={endGame}
+              isGame={isStart}
+              time={time}
+              changeTime={changeTime}
+              currentTotalPoints={currentTotalPoints}
+            />
+          </header>
+          <DisplayGame
+            createScore={createScore}
+            activeBlocks={activeBlocks}
+            cash={cash}
+          />
+          </Col>
+          <RatingComponent users={users}/>
+        </Row>
+      </Container>
+      <ModalSaveResult
+        isShowModal={isShowModal}
+        handleSave={saveUserResult}
+        handleCancel={resetUserResult}
+      /> 
+    </Fragment>
   );
 }
 
-export default App;
+export default HistoryUsers(App);

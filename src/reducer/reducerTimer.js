@@ -1,26 +1,17 @@
 import React from "react";
-import {
-  TOTAL_ACTIVE_BLOCKS,
-  MAX_TOTAL_BLOCKS,
-  TYPE_CUBE_LIST,
-  STEP_FOR_GAME,
-  DURATION_GAME,
-  actions,
-} from '../constants';
-import { createRamdonNunber } from '../utils/common';
-
-const getRandomNumber = () => createRamdonNunber(MAX_TOTAL_BLOCKS);
-const getRandomBlockType = () =>  TYPE_CUBE_LIST[createRamdonNunber(TYPE_CUBE_LIST.length)];
-
+import { TOTAL_ACTIVE_BLOCKS, STEP_FOR_GAME, DURATION_GAME, actions } from '../constants';
+import { getRandomBlockType, getRandomNumber } from '../utils/common';
 export const ContextApp = React.createContext();
+
 let _timeout = null;
+let resolvePromiseNewGame = null;
+
 export default function reducer(state, action) {
   switch (action.type) {
     case actions.START_GAME: {
       let activeBlocks = [];
-
       while (activeBlocks.length < TOTAL_ACTIVE_BLOCKS) {
-        const randomNumber = getRandomNumber();
+        const randomNumber = getRandomNumber(activeBlocks);
         if (!activeBlocks.includes(randomNumber)) {
           state.cash[randomNumber] = getRandomBlockType();
           activeBlocks.push(randomNumber);
@@ -38,13 +29,27 @@ export default function reducer(state, action) {
       };
     }
 
+    case actions.NEW_GAME: {
+      clearInterval(_timeout);
+
+      return {
+        ...state,
+        isStart: false,
+        isNewGame: true,
+        isShowModal: true,
+        time: 0,
+      };
+    }
+
     case actions.RESET_RESULT: {
+      resolvePromiseNewGame();
       return {
         ...state,
         activeBlocks: [],
         currentTotalPoints: 0,
         isShowModal: false,
         isStart: false,
+        cash: Object.assign({}, state.cash),
         time: 0,
       }
     }
@@ -53,6 +58,7 @@ export default function reducer(state, action) {
       const { name } = action;
       const users = [...state.users, { name, points: state.currentTotalPoints }];
       localStorage.setItem('historyUsers', JSON.stringify(users));
+      resolvePromiseNewGame()
 
       return {
         ...state,
@@ -64,33 +70,41 @@ export default function reducer(state, action) {
       }
     }
 
-    case actions.END_GAME:
+    case actions.END_GAME: {
       clearInterval(_timeout);
+      resolvePromiseNewGame = action.resolvePromise;
 
       return {
         ...state,
         isStart: false,
-        activeBlocks: [],
         isShowModal: true,
         time: 0,
       };
-
+    }
     case actions.CREATE_SCORE: {
+      let currentTotalPoints = state.currentTotalPoints;
+      let cash = {...state.cash};
       const activeBlocks = state.activeBlocks.filter(_ => {
         if (_ !== action.targetPosition) {
           return true;
         }
-        state.currentTotalPoints +=  state.cash[action.targetPosition].points;
+        if (cash[action.targetPosition].totalTimeClick - 1  > cash[action.targetPosition].counterTimeClick) {
+          cash[action.targetPosition].counterTimeClick = cash[action.targetPosition].counterTimeClick + 1;
+          return true; 
+        }
+        currentTotalPoints = currentTotalPoints + cash[action.targetPosition].points;
         return false;
       });
 
       if (activeBlocks.length === 1) {
-        const randomNumber = getRandomNumber()
-        state.cash[randomNumber] = getRandomBlockType();
+        const randomNumber = getRandomNumber(state.activeBlocks);
+        cash[randomNumber] = getRandomBlockType();
         activeBlocks.push(randomNumber);
       }
       return {
         ...state,
+        cash,
+        currentTotalPoints,
         activeBlocks,
       }
     }
@@ -105,7 +119,7 @@ export default function reducer(state, action) {
     }
 
     default:
-     return state;
+      throw new Error();
   }
 }
 

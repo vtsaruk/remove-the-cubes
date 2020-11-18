@@ -18,7 +18,7 @@ export const actions = {
     CREATE_SCORE,
 }
 
-export const DURATION_GAME = 20 * 1000;
+export const DURATION_GAME = 60 * 1000;
 export const STEP_FOR_GAME = 1000;
 export const TOTAL_ACTIVE_BLOCKS = 2;
 export const MAX_TOTAL_BLOCKS= 100;
@@ -30,6 +30,7 @@ export const initialState = {
     currentTotalPoints: 0,
     cash: {},
     isShowModal: false,
+    isNewGame: false,
 }
 
 export const MAX_TOTAL_CLICK_ON_ACTIVE_BLOCK = 4; 

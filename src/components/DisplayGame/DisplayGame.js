@@ -14,17 +14,25 @@ function DisplayGame({activeBlocks = [], createScore, cash = {}}) {
   const renderCell = (item) => {
     const targetIndex = item + 1;
     const isActive = activeBlocks.includes(targetIndex);
-
+    
     if (!isActive) {
       return <div key={item} className="cell" />
     }
-
+    
     const _handleClick = () => handleClick(targetIndex);
+    const {counterTimeClick, totalTimeClick, color } = cash[targetIndex];
+    const opacity = (totalTimeClick - counterTimeClick) / totalTimeClick;
+    if (!opacity) {
+      debugger;
+    }
     return (
       <div
         key={item}
         className="cell active"
-        style={{background: cash[targetIndex].color}}
+        style={{
+          background: color,
+          opacity,
+        }}
         onClick={_handleClick}
       />
     )

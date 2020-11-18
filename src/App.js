@@ -1,4 +1,4 @@
-import React, {useReducer, Fragment} from 'react'
+import React, {useReducer, useCallback, Fragment} from 'react'
 import { InfoDisplay, Timer, DisplayGame, RatingComponent, ModalSaveResult } from './components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
@@ -11,8 +11,9 @@ import { reducerTimer } from './reducer';
 import './App.css';
 
 function App({historyUsers}) {
+  const memoizedReducer = useCallback(reducerTimer, []);
   const [state, dispatch] = useReducer(
-    reducerTimer,
+    memoizedReducer,
     {
       ...initialState,
       users: historyUsers,
@@ -20,13 +21,13 @@ function App({historyUsers}) {
   );
   const {time, isStart, activeBlocks, cash, currentTotalPoints, isShowModal, users} = state;
 
-  const startGame = () =>  dispatch({ type: actions.START_GAME });
+  const endGame = () => dispatch({ type: actions.END_GAME });
+  const changeTime = () => dispatch({ type: actions.CHANGE_TIME, endGame });
+  const startGame = () =>  dispatch({ type: actions.START_GAME, changeTime });
   const createNewGame = () => {
     endGame();
     setTimeout(startGame, 0);
   }
-  const changeTime = () => dispatch({ type: actions.CHANGE_TIME })
-  const endGame = () => dispatch({ type: actions.END_GAME });
   const saveUserResult = (data) => dispatch({ type: actions.SAVE_RESULT, ...data });
   const resetUserResult = () => dispatch({ type: actions.RESET_RESULT });
   const createScore = (targetPosition) => dispatch({ type: actions.CREATE_SCORE, targetPosition });

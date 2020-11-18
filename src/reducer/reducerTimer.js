@@ -1,3 +1,4 @@
+import React from "react";
 import {
   TOTAL_ACTIVE_BLOCKS,
   MAX_TOTAL_BLOCKS,
@@ -11,6 +12,8 @@ import { createRamdonNunber } from '../utils/common';
 const getRandomNumber = () => createRamdonNunber(MAX_TOTAL_BLOCKS);
 const getRandomBlockType = () =>  TYPE_CUBE_LIST[createRamdonNunber(TYPE_CUBE_LIST.length)];
 
+export const ContextApp = React.createContext();
+let _timeout = null;
 export default function reducer(state, action) {
   switch (action.type) {
     case actions.START_GAME: {
@@ -23,6 +26,8 @@ export default function reducer(state, action) {
           activeBlocks.push(randomNumber);
         }
       }
+
+      _timeout = setInterval(action.changeTime, 1000);
 
       return {
         ...state,
@@ -60,6 +65,8 @@ export default function reducer(state, action) {
     }
 
     case actions.END_GAME:
+      clearInterval(_timeout);
+
       return {
         ...state,
         isStart: false,
@@ -89,6 +96,10 @@ export default function reducer(state, action) {
     }
 
     case actions.CHANGE_TIME: {
+      if (state.time < 1 ) {
+        action.endGame();
+        return {...state};
+      }
       const time = state.time ? state.time - STEP_FOR_GAME : 0;
       return {  ...state, time }
     }

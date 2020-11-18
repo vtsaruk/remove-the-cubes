@@ -1,10 +1,3 @@
-:root {
-  --width-cube: 10vw;
-  --height-cude: 10hv;
-}
-
-/* calc(1 - (1 - var(--k))*(1 - var(--i))) */
-
 .header {
   display: flex;
   padding-bottom: 8px;
@@ -18,4 +11,10 @@
 
 .start-game-button {
   margin-right: 16px;
+}
+
+@media (min-width: 1200px) {
+  .container {
+    width: 100vh;
+  }
 }

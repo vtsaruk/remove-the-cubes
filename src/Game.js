@@ -1,23 +1,15 @@
-import React, {useReducer, useCallback, useContext, Fragment} from 'react'
+import React, { useContext, Fragment} from 'react'
 import { InfoDisplay, Timer, DisplayGame, RatingComponent, ModalSaveResult } from './components';
 import Container from 'react-bootstrap/Container';
 import Row from 'react-bootstrap/Row';
 import Col from 'react-bootstrap/Col';
 import Button from 'react-bootstrap/Button';
 import HistoryUsers from './HOC/HistoryUsers';
-import { actions, initialState } from './constants';
-import { reducerTimer, ContextApp } from './reducer';
+import { actions } from './constants';
+import { ContextApp } from './reducer';
 import './App.css';
 
-function App({historyUsers}) {
-//   const memoizedReducer = useCallback(reducerTimer, []);
-//   const [state, dispatch] = useReducer(
-//     memoizedReducer,
-//     {
-//       ...initialState,
-//       users: historyUsers,
-//     }
-//   );
+function App() {
 const {state, dispatch} = useContext(ContextApp);
   const {time, isStart, activeBlocks, cash, currentTotalPoints, isShowModal, users} = state;
 

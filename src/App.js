@@ -3,11 +3,11 @@ import HistoryUsers from './HOC/HistoryUsers';
 import Game from './Game';
 
 import { initialState } from './constants';
-import { reducerTimer, ContextApp } from './reducer';
+import { reducerGame, ContextApp } from './reducer';
 import './App.css';
 
 function App({historyUsers}) {
-  const memoizedReducer = useCallback(reducerTimer, []);
+  const memoizedReducer = useCallback(reducerGame, []);
   const [state, dispatch] = useReducer(
     memoizedReducer,
     {
